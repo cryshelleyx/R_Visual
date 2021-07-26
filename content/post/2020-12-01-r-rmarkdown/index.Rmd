@@ -1,7 +1,7 @@
 ---
 title: "Assignment Question 1 and Question 2"
 author: "Yang Xu"
-date: '2020-07-25T21:13:14-05:00'
+date: '2021-07-25T21:13:14-05:00'
 categories: R
 tags:
 - R Markdown
@@ -41,11 +41,9 @@ Therefore, this write-up will help to provide more interactive plots to enable t
 * First of all, we need to load the necessary packages to the environment. 
 
 
-<<<<<<< HEAD
+
 ```{r ,echo=FALSE , message=FALSE, warning=FALSE}
-=======
-```{r, echo = TRUE, results = FALSE}
->>>>>>> 21cb918659da75484ee1e8f57df5a26ef51d2466
+
 
 packages = c( 'clock','raster', 'sf', 'tmap', 'tidyverse', 'stringi', 'plotly', 'DT', 'patchwork','readxl', 'Rcpp', 'lubridate')
 
@@ -62,11 +60,8 @@ for (p in packages){
 * The locationMapping.csv was created to categorise locations 'F&B', 'Work' and 'Lifestyle'.
 
 
-<<<<<<< HEAD
 ```{r,echo=FALSE , message=FALSE, warning=FALSE}
-=======
-```{r, echo = TRUE, results = FALSE}
->>>>>>> 21cb918659da75484ee1e8f57df5a26ef51d2466
+
 # read data in 
 cc <- read_csv('MC2\\cc_data.csv')
 loyalty <- read_csv('MC2\\loyalty_data.csv')
@@ -298,12 +293,10 @@ ggplotly(
 <<<<<<< HEAD
 
 * More people visited Hippokampos during the morning hours.
-=======
-
-* More people visited Hippokampos during the morning hours.
 
 
-```{r}
+
+```{r, message=FALSE, warning=FALSE}
 #location visit by the time period 
 df3 <- df1 %>%
   group_by(location, period) %>%
@@ -317,9 +310,10 @@ plot2 <- ggplot(df3,
   geom_col(aes(fill = period)) + 
   scale_fill_brewer(palette = "Spectral") +
   theme_light()
->>>>>>> 21cb918659da75484ee1e8f57df5a26ef51d2466
+
 
 ggplotly(plot2, height = 600, width = 800)
+
 ```
 
 ```{r, message=FALSE, warning=FALSE}
@@ -328,7 +322,7 @@ df3 <- df1 %>%
   group_by(location, period) %>%
   summarise(n = n())
 
-<<<<<<< HEAD
+
 plot2 <- ggplot(df3,
                 aes(x = n,
                     y = location)) +
@@ -339,6 +333,7 @@ plot2 <- ggplot(df3,
   theme_light()
 
 ggplotly(plot2, height = 600, width = 800)
+
 ```
 
 
@@ -388,7 +383,7 @@ p1 <-
                   fill = "lightblue") + 
     ggtitle("Brew've Been Served")
   
-  #(p1 + p2)/(p3+p4)
+  (p1 + p2)/(p3+p4)
 ```
 
 transaction boxplot  by location 
@@ -561,174 +556,15 @@ Highlighted credit cards only have spending at the work related places, such as 
 
 By looking at the map trajectories of the truck drivers, such as card ID 104, we can match that the corresponding credit card number is 8642.
 
-
-Some of the problems identified could be:
-
-* Not always true that the one who drove the car would have paid the bill. Therefore, those with high overlapping of trajectories and similar paying records might cause the problems on mapping.
-=======
-For a more detailed breakdown, the individual graphs of each coffee cafe is ploted. It is observed that 
-
 ```{r}
-#credit card by hour and location 
-#library(devtools)
-#("thomasp85/patchwork")
-#library(patchwork)
-list <- c("Kronos Mart", "Bean There Done That", "Brewed Awakenings","Jack's Magical Beans")
-
-df2 <- df1 %>%
-  group_by(location, hour) %>%
-  summarise(n = n())
-
-p1 <-
-       ggplot(df2[df2$location =="Brewed Awakenings",],
-       aes(x = hour, y = n)) +
-       geom_bar(stat = "identity",
-                  color = "black",
-                  fill = "lightblue") + 
-    ggtitle("Brewed Awakenings")
-
-  p2 <-
-       ggplot(df2[df2$location =="Bean There Done That",],
-       aes(x = hour, y = n)) +
-       geom_bar(stat = "identity",
-                  color = "black",
-                  fill = "lightblue") + 
-    ggtitle("Bean There Done That")
-
-  p3 <-
-       ggplot(df2[df2$location =="Jack's Magical Beans",],
-       aes(x = hour, y = n)) +
-       geom_bar(stat = "identity",
-                  color = "black",
-                  fill = "lightblue") + 
-    ggtitle("Jack's Magical Beans")
-  
-  
-  p4 <-
-       ggplot(df2[df2$location =="Brew've Been Served",],
-       aes(x = hour, y = n)) +
-       geom_bar(stat = "identity",
-                  color = "black",
-                  fill = "lightblue") + 
-    ggtitle("Brew've Been Served")
-  
-  #(p1 + p2)/(p3+p4)
-```
-
-transaction boxplot  by location 
-
-```{r}
-ggplotly(
-  ggplot(df1[df1$Category == 'F&B',], aes(x = location,
-                y = price,
-                #group = Category,
-                color = location,
-                text = paste("Price: ", price, "<br>", "CC: ", last4ccnum, "<br>", "Timestamp: ", timestamp))) + 
-    #facet_grid(rows = vars(Category)) + 
-    geom_jitter(size = 0.5) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)),
-  tooltip = c('text')
-)
-
-```
-
-```{r}
-ggplotly(
-  ggplot(df1[df1$Category == 'Life',], aes(x = location,
-                y = price,
-                #group = Category,
-                color = location,
-                text = paste("Price: ", price, "<br>", "CC: ", last4ccnum, "<br>", "Timestamp: ", timestamp))) + 
-    #facet_grid(rows = vars(Category)) + 
-    geom_jitter(size = 0.5) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)),
-  tooltip = c('text')
-)
-```
-
-```{r}
-ggplotly(
-  ggplot(df1[df1$Category == 'Work',], aes(x = location,
-                y = price,
-                #group = Category,
-                color = location,
-                text = paste("Price: ", price, "<br>", "CC: ", last4ccnum, "<br>", "Timestamp: ", timestamp))) + 
-    #facet_grid(rows = vars(Category)) + 
-    geom_jitter(size = 0.5) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)),
-  tooltip = c('text')
-)
-```
-
-
-# Question 2
-
-Add the vehicle data to your analysis of the credit and loyalty card data. How does your assessment of the anomalies in question 1 change based on this new data? What discrepancies between vehicle, credit, and loyalty card data do you find? Please limit your answer to 8 images and 500 words.
-
-Mapped using the same date and same amount of price. However, some of the credit card and loyalty data could not be mapped. 
-
-This suggests that there might be some time delay of the transactions and reflections of the details.
-
-Furthermore, by interacting with the graph below, we can observe some loyalty card has transactions of multiple credit card.
-
-```{r}
-#consistency between the loyaltycard data and cc data
-ggplotly(
-  ggplot(df1 %>% filter(loyaltynum != 'NA'),
-       aes(x = datehour, y = last4ccnum, fill = loyaltynum)) +
-         geom_tile(stat="identity", width=1, height=.9) 
-)
-
-```
-
-For example, there are cases that one loyalty card could be matched to multiple credit card transactions. By clicking on the loyalty card number L8566, more than one credit card number showing same date and same amount matched. 
-
-
-![](Image/Picture2.png)
-
-By introducing the geo-data into the analysis. We can prove that there is some time lag of the transactions. 
-
-For example,we can look at the Kronos Mart transactions. 
-
-By overlaying the map and GPS data together and observe the transaction details, we can click on to the dot of the trajactories to look at the time of visit. 
-
-it is evident that there is a 12-hour time lag of the visit and reflections of transaction details.
-
-
-```{r, echo = TRUE}
-tm_shape(ap) +
-  tm_rgb(ap, r = 1, g = 2, b = 3,
-         alpha = NA,
-         saturation = 1,
-         interpolate = TRUE,
-         max.value = 255)
-
-#shapefile consists of many files 
-#Import vector GIS Data File 
-abila_st <- st_read(dsn = 'MC2\\Geospatial',
-                    layer = "Abila")
-
-gps$Timestamp <- date_time_parse(gps$Timestamp,
-                                 zone = "",
-                                 format = "%m/%d/%Y %H:%M:%S")
-gps$id = as_factor(gps$id)
-gps$day <- as.factor(get_day(gps$Timestamp))
-gps$hour <- strftime(gps$Timestamp, format = "%H")
-gps$period <- cut(as.numeric(gps$hour),
-                  breaks = c(0,6,12,14,19,20,23),
-                  labels = c("midnight",
-                             "morning",
-                             "lunch",
-                             "afternoon",
-                             "dinner",
-                             "nignt"))
-
 gps_sf <- st_as_sf(gps,
                    coords = c("long", "lat"),
                    crs = 4326)
 
 gps_path_selected <- gps_sf %>%
-  filter(id == c('1', "5", "23")) 
+  st_as_sf() %>%
+  filter(id == c("104")) 
+
 tmap_mode("view")
 tm_shape(ap) +
   tm_rgb(ap, r = 1, g = 2, b = 3,
@@ -737,26 +573,21 @@ tm_shape(ap) +
          interpolate = TRUE,
          max.value = 255) + 
   tm_shape(gps_path_selected) +
-  tm_dots(col = 'id')
-
-kronos <- df1[c("timestamp", "location", "price")] %>%
-  filter(location == "Kronos Mart")
-  
-mutate(kronos, timestamp = format(timestamp,"%d/%m/%Y, %H:%M:%S")) %>%
-         datatable(rownames=TRUE, filter="top", class = 'cell-border stripe')
+  tm_dots(col = 'id', size = 0.05)
 
 
 ```
->>>>>>> 21cb918659da75484ee1e8f57df5a26ef51d2466
+
+
+Some of the problems identified could be:
+
+* Not always true that the one who drove the car would have paid the bill. Therefore, those with high overlapping of trajectories and similar paying records might cause the problems on mapping.
 
 * Since we do not have the full list of locations and exact locations of the places, we could not just correlate information based on the map icon. Repeated patterns of traveling trajectories and correctly matched transaction records gradually helped to identify the correct zoning of locations. 
 
 For example, we could locate the Hippokampos through the card details and locations.
 
 ![](Image/Picture3.PNG)
-
-
-
 
 
 
