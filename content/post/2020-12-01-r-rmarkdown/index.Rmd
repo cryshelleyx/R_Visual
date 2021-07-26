@@ -35,12 +35,13 @@ However, it is often the case that the visuals are not interactive hence the rea
 Therefore, this write-up will help to provide more interactive plots to enable the ease of interactivity in visual analytics.
 
 
+
 # 2 Data Description and Preparation
 
 * First of all, we need to load the necessary packages to the environment. 
 
 
-```{r, echo = TRUE, results = FALSE}
+```{r ,echo=FALSE , message=FALSE, warning=FALSE}
 
 packages = c( 'clock','raster', 'sf', 'tmap', 'tidyverse', 'stringi', 'plotly', 'DT', 'patchwork','readxl', 'Rcpp', 'lubridate')
 
@@ -57,7 +58,7 @@ for (p in packages){
 * The locationMapping.csv was created to categorise locations 'F&B', 'Work' and 'Lifestyle'.
 
 
-```{r, echo = TRUE, results = FALSE}
+```{r,echo=FALSE , message=FALSE, warning=FALSE}
 # read data in 
 cc <- read_csv('MC2\\cc_data.csv')
 loyalty <- read_csv('MC2\\loyalty_data.csv')
@@ -72,7 +73,7 @@ gps <- read_csv('MC2\\gps.csv')
 * Remove the special characters of location names
 
 
-```{r, echo = TRUE}
+```{r,echo=FALSE , message=FALSE, warning=FALSE}
 cc$timestamp <- date_time_parse(cc$timestamp,
                                  zone = "",
                                  format = "%m/%d/%Y %H:%M")
@@ -97,7 +98,7 @@ datatable(locationmapping)
 
 Data Preprocessing 
 
-```{r}
+```{r,echo=FALSE , message=FALSE, warning=FALSE}
 #join the dataset cc-data.csv and loyalty_data.csv by date, location and price
 cc <- left_join(cc,locationmapping,
                 by = c('location' = "Location"))
@@ -133,7 +134,7 @@ Using just the credit and loyalty card data, identify the most popular locations
 
 * Eateries have quite high visits as well. Katerina's Cafe is the highest in terms of spending records of 214 times. Hippokampos aslo have very high visits. 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #The top few spots by visit 
 df_sum <- df1 %>%
   group_by(location) %>%
@@ -168,7 +169,7 @@ Location visits by the time period
 
 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #location visit by the time period 
 df3 <- df1 %>%
   group_by(location, period) %>%
@@ -189,7 +190,7 @@ ggplotly(plot2, height = 600, width = 800)
 
 For a more detailed breakdown, the individual graphs of each coffee cafe is ploted. It is observed that 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #credit card by hour and location 
 #library(devtools)
 #("thomasp85/patchwork")
@@ -240,7 +241,7 @@ transaction boxplot by location
 
 Some outliers are revealed by the 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(df1[df1$Category == 'F&B',], aes(x = location,
                 y = price,
@@ -255,7 +256,7 @@ ggplotly(
 
 ```
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(df1[df1$Category == 'Life',], aes(x = location,
                 y = price,
@@ -269,7 +270,7 @@ ggplotly(
 )
 ```
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(df1[df1$Category == 'Work',], aes(x = location,
                 y = price,
@@ -290,7 +291,7 @@ ggplotly(
 * More people visited Hippokampos during the morning hours.
 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #location visit by the time period 
 df3 <- df1 %>%
   group_by(location, period) %>%
@@ -311,7 +312,7 @@ ggplotly(plot2, height = 600, width = 800)
 
 For a more detailed breakdown, the individual graphs of each coffee cafe is ploted. It is observed that 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #credit card by hour and location 
 #library(devtools)
 #("thomasp85/patchwork")
@@ -360,7 +361,7 @@ p1 <-
 
 transaction boxplot  by location 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(df1[df1$Category == 'F&B',], aes(x = location,
                 y = price,
@@ -375,7 +376,7 @@ ggplotly(
 
 ```
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(df1[df1$Category == 'Life',], aes(x = location,
                 y = price,
@@ -389,7 +390,7 @@ ggplotly(
 )
 ```
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplotly(
   ggplot(df1[df1$Category == 'Work',], aes(x = location,
                 y = price,
@@ -414,7 +415,7 @@ This suggests that there might be some time delay of the transactions and reflec
 
 Furthermore, by interacting with the graph below, we can observe some loyalty card has transactions of multiple credit card.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 #consistency between the loyaltycard data and cc data
 ggplotly(
   ggplot(df1 %>% filter(loyaltynum != 'NA'),
@@ -438,7 +439,7 @@ By overlaying the map and GPS data together and observe the transaction details,
 it is evident that there is a 12-hour time lag of the visit and reflections of transaction details.
 
 
-```{r, echo = TRUE}
+```{r, message=FALSE, warning=FALSE}
 tm_shape(ap) +
   tm_rgb(ap, r = 1, g = 2, b = 3,
          alpha = NA,
@@ -492,7 +493,52 @@ mutate(kronos, timestamp = format(timestamp,"%d/%m/%Y, %H:%M:%S")) %>%
 ```
 
 
+# Question 3 
+Can you infer the owners of each credit card and loyalty card? What is your evidence? Where are there uncertainties in your method? Where are there uncertainties in the data? Please limit your answer to 8 images and 500 words.
 
+My methodology is to look at both the spending data and the gps location and try to look for patterns to match the datasets. 
+
+Patterns could be employees stay for a period of time and use their credit card at the location. By looking at evidences overtime and use logic of elimination, it is possible to deduct the location area and identify those not marked by the tourist map. 
+
+First of all, by observing a cholorpleth plot, we can find similar patterns for some vehicles. 
+
+
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+#question 3 
+
+#Identify truck driver 
+df4 <- df1 %>%
+   group_by(last4ccnum,location, hour) %>%
+  summarise(n = n())
+  
+m <- ggplot(df4,aes(x = location, y = last4ccnum)) +
+         geom_tile(stat="identity", 
+                   aes(fill = n),
+                   col = "black")+
+  scale_fill_gradient(low="#ecefb7", high="#3a81b5", na.value = "white",
+                      breaks = c(1,3,5,7,9)) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 5),
+          axis.text.y = element_text(size = 7))
+
+```
+
+![](image/picture1.png)
+
+Highlighted credit cards only have spending at the work related places, such as Abila Scrapyard. Hence we know that the owners of the credit card only use the vehicles for work purposes. 
+
+By looking at the map trajectories of the truck drivers, such as card ID 104, we can match that the corresponding credit card number is 8642.
+
+
+Some of the problems identified could be:
+
+* Not always true that the one who drove the car would have paid the bill. Therefore, those with high overlapping of trajectories and similar paying records might cause the problems on mapping.
+
+* Since we do not have the full list of locations and exact locations of the places, we could not just correlate information based on the map icon. Repeated patterns of traveling trajectories and correctly matched transaction records gradually helped to identify the correct zoning of locations. 
+
+For example, we could locate the Hippokampos through the card details and locations.
+
+![](Image/Picture3.PNG)
 
 
 

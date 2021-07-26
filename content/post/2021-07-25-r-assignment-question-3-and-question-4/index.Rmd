@@ -1,0 +1,253 @@
+---
+title: R Assignment - Question 3 and Question 4
+author: Yang Xu
+date: '2021-07-25'
+slug: r-assignment-question-3-and-question-4
+categories: []
+tags: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo = FALSE, results = FALSE, include=FALSE}
+packages = c( 'clock','raster', 'sf', 'tmap', 'tidyverse', 'stringi', 'plotly', 'DT', 'patchwork','readxl', 'Rcpp', 'lubridate')
+
+for (p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  
+  library(p, character.only = T)
+}
+
+cc <- read_csv('MC2\\cc_data.csv')
+loyalty <- read_csv('MC2\\loyalty_data.csv')
+locationmapping <- read_csv('MC2\\LocationMapping.csv')
+ap <- raster("C:\\Study\\MITB Term 3\\ISSS608 Visual Analytics\\Lesson08\\In-class_Ex08\\Geospatial\\MC2-tourist.tif")
+gps <- read_csv('MC2\\gps.csv')
+
+cc$timestamp <- date_time_parse(cc$timestamp,
+                                 zone = "",
+                                 format = "%m/%d/%Y %H:%M")
+
+loyalty$timestamp <- as.Date(loyalty$timestamp, 
+                             format="%m/%d/%Y")
+
+cc$date <- as.Date(cc$timestamp, 
+                   format="%m/%d/%Y")
+cc$location <- stri_trans_general(cc$location, 
+                         
+         "latin-ascii")
+loyalty$location <- stri_trans_general(loyalty$location,
+                                       "latin-ascii")
+locationmapping$Location <- stri_trans_general(locationmapping$Location,
+                                       "latin-ascii")
+
+cc <- left_join(cc,locationmapping,
+                by = c('location' = "Location"))
+df1 <- left_join(cc, loyalty,
+                 by = c('date' = 'timestamp','location', 'price'))
+
+
+#adding features of the data
+df1$hour <- strftime(df1$timestamp, format = "%H")
+df1$datehour <- strftime(df1$timestamp, format = "%d-%H")
+df1$period <- cut(as.numeric(df1$hour),
+                  breaks = c(0,5,11,14,19,20,23),
+                  labels = c("midnight",
+                             "morning",
+                             "lunch",
+                             "afternoon",
+                             "dinner",
+                             "nignt"))
+
+#df1$location <- stri_trans_general(df1$location, "latin-ascii")
+
+df1$last4ccnum <- as_factor(df1$last4ccnum)
+df1$loyaltynum <- as_factor(df1$loyaltynum)
+
+gps$Timestamp <- date_time_parse(gps$Timestamp,
+                                 zone = "",
+                                 format = "%m/%d/%Y %H:%M:%S")
+gps$id = as_factor(gps$id)
+gps$day <- as.factor(get_day(gps$Timestamp))
+gps$hour <- strftime(gps$Timestamp, format = "%H")
+gps$period <- cut(as.numeric(gps$hour),
+                  breaks = c(0,6,12,14,19,20,23),
+                  labels = c("midnight",
+                             "morning",
+                             "lunch",
+                             "afternoon",
+                             "dinner",
+                             "nignt"))
+```
+
+
+
+
+
+
+# Question 4 
+
+1. around 3am some employees were traveling on same routes near the supposed executives houses (Ada Campo-Corrente, Orhan Strum, Willem Vasco-Pais and Ingrid Barranco) including: Loreto Bodrogi (car15), Isia Vann (car16), Hennie Osvaldo (car21) and Minke Mies (car24) on 7th, 9th and 14th.
+
+These security personnels do not have much interactions other than the midnight events. Perhaps they were monitoring the executives' night movements.
+
+
+```{r, include=FALSE}
+car_cc <- read_excel('MC2\\car_cc.xlsx')
+car_assign <- read_csv('MC2\\car-assignments.csv')
+car_assign <- left_join(car_assign, car_cc, 
+                        by = c('CarID' = 'id'))
+car_assign$cc <- as_factor(car_assign$cc)
+df1 <- left_join(df1, car_assign,
+                 by = c("last4ccnum" = "cc"))
+
+```
+
+
+
+
+```{r, , message=FALSE, warning=FALSE}
+#3am 
+
+gps_sf <- st_as_sf(gps,
+                   coords = c("long", "lat"),
+                   crs = 4326)
+
+gps_path_selected <- gps_sf %>%
+  st_as_sf() %>%
+  filter(period == c("midnight")) 
+
+tmap_mode("view")
+tm_shape(ap) +
+  tm_rgb(ap, r = 1, g = 2, b = 3,
+         alpha = NA,
+         saturation = 1,
+         interpolate = TRUE,
+         max.value = 255) + 
+  tm_shape(gps_path_selected) +
+  tm_dots(col = 'id', size = 0.05)
+
+```
+
+2. Playing Golf 
+executive meeting at golf on 12th by car id 4, 10, 35 - Ingrid Barranco, Ada Campo-Corrente, Willem Vasco-Pais.
+
+```{r,echo=FALSE , message=FALSE, warning=FALSE}
+
+gps_path_selected <- gps_sf %>%
+  st_as_sf() %>%
+  filter(day == "12") 
+
+tmap_mode("view")
+tm_shape(ap) +
+  tm_rgb(ap, r = 1, g = 2, b = 3,
+         alpha = NA,
+         saturation = 1,
+         interpolate = TRUE,
+         max.value = 255) + 
+  tm_shape(gps_path_selected) +
+  tm_dots(col = 'id', size = 0.05)
+```
+
+
+3. CEO Welcome Party 
+
+car ID 31 -Sten Sanjorge, the CEO only joined them on 19th. 
+
+Everyone spent over 100 dollars on 19th. 
+
+
+```{r,echo=FALSE , message=FALSE, warning=FALSE}
+golf <- df1[c("timestamp", "FirstName", "LastName", "location", "price")] %>%
+  filter(location == "Desafio Golf Course")
+  
+mutate(golf, timestamp = format(timestamp,"%d/%m/%Y, %H:%M:%S")) %>%
+         datatable(rownames=TRUE, filter="top", class = 'cell-border stripe')
+
+
+```
+
+
+4. Hotel Meetup during lunch hours 
+
+Elsa Orilla and Brand Tempestad visited hotel during midday during lunch hours on 8th, 10th, 14th and 17th. They paid their bills separately. 
+
+
+```{r,echo=FALSE , message=FALSE, warning=FALSE}
+
+hotel<- df1%>% filter(location == "Chostus Hotel")
+hotel <- hotel[c("timestamp", "last4ccnum", "LastName", "FirstName", "CurrentEmploymentType","CurrentEmploymentTitle", "price")] 
+
+mutate(hotel, 
+       timestamp = format(timestamp,"%d/%m/%Y, %H:%M:%S")) %>%
+         datatable(rownames=TRUE, filter="top", class = 'cell-border stripe')
+
+```
+
+
+# question 5 
+
+1. Overall, only very few fueling activities detected.
+
+For Car ID 1, which is drove by Nils Calixto. The very few transactions at at Autosupply and U-Pump and Daily Dealz were on his records. 
+
+On 13th, he stayed at Hippokampos until 135pm. However, there was a transaction record at 118pm at U-Pump. Without driving a car, it is suspicious why there was a transcation done at place far from the eatery.
+
+![](Image/Picture4.png)
+
+
+2. Various security persons vistied Kronos Capital on 18th at different time intervals. Adra Nubarron stayed at Kronos Capital for almost 24 hours.
+
+```{r,echo=FALSE , message=FALSE, warning=FALSE}
+gps_sf <- st_as_sf(gps,
+                   coords = c("long", "lat"),
+                   crs = 4326)
+gps_path_selected <- gps_sf %>%
+  st_as_sf() %>%
+  filter(day == "18")
+
+tmap_mode("view")
+tm_shape(ap) +
+  tm_rgb(ap, r = 1, g = 2, b = 3,
+         alpha = NA,
+         saturation = 1,
+         interpolate = TRUE,
+         max.value = 255) + 
+  tm_shape(gps_path_selected) +
+  tm_dots(col = 'id', size = 0.05)
+
+
+```
+
+3. Unknown place 
+
+Security People repeatedly visited an unknown place near Bean there around 1120am on 17th, 9th, 8th.
+
+```{r,echo=FALSE , message=FALSE, warning=FALSE}
+gps_sf <- st_as_sf(gps,
+                   coords = c("long", "lat"),
+                   crs = 4326)
+gps_path_selected <- gps_sf %>%
+  st_as_sf() %>%
+  filter(id== c("15", "24","21"))
+
+tmap_mode("view")
+tm_shape(ap) +
+  tm_rgb(ap, r = 1, g = 2, b = 3,
+         alpha = NA,
+         saturation = 1,
+         interpolate = TRUE,
+         max.value = 255) + 
+  tm_shape(gps_path_selected) +
+  tm_dots(col = 'id', size = 0.05)
+
+
+```
+
+
+
