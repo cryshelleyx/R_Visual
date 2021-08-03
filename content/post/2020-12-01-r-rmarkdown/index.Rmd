@@ -1,5 +1,5 @@
 ---
-title: "Assignment Question 1 and Question 2"
+title: "Assignment Question 1,Question 2 & Question 3"
 author: "Yang Xu"
 date: '2021-07-25T21:13:14-05:00'
 categories: R
@@ -60,7 +60,7 @@ for (p in packages){
 * The locationMapping.csv was created to categorise locations 'F&B', 'Work' and 'Lifestyle'.
 
 
-```{r,echo=FALSE , message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 
 # read data in 
 cc <- read_csv('MC2\\cc_data.csv')
@@ -556,28 +556,7 @@ Highlighted credit cards only have spending at the work related places, such as 
 
 By looking at the map trajectories of the truck drivers, such as card ID 104, we can match that the corresponding credit card number is 8642.
 
-```{r}
-gps_sf <- st_as_sf(gps,
-                   coords = c("long", "lat"),
-                   crs = 4326)
-
-gps_path_selected <- gps_sf %>%
-  st_as_sf() %>%
-  filter(id == c("104")) 
-
-tmap_mode("view")
-tm_shape(ap) +
-  tm_rgb(ap, r = 1, g = 2, b = 3,
-         alpha = NA,
-         saturation = 1,
-         interpolate = TRUE,
-         max.value = 255) + 
-  tm_shape(gps_path_selected) +
-  tm_dots(col = 'id', size = 0.05)
-
-
-```
-
+![](image/104.png)
 
 Some of the problems identified could be:
 
