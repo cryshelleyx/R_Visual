@@ -136,23 +136,9 @@ tm_shape(ap) +
 
 2. Playing Golf 
 executive meeting at golf on 12th by car id 4, 10, 35 - Ingrid Barranco, Ada Campo-Corrente, Willem Vasco-Pais.
-
-```{r,echo=FALSE , message=FALSE, warning=FALSE}
-
-gps_path_selected <- gps_sf %>%
-  st_as_sf() %>%
-  filter(day == "12") 
-
-tmap_mode("view")
-tm_shape(ap) +
-  tm_rgb(ap, r = 1, g = 2, b = 3,
-         alpha = NA,
-         saturation = 1,
-         interpolate = TRUE,
-         max.value = 255) + 
-  tm_shape(gps_path_selected) +
-  tm_dots(col = 'id', size = 0.05)
-```
+![](image/4.png)
+![](image/10.png)
+![](image/35.png)
 
 
 3. CEO Welcome Party 
@@ -203,51 +189,14 @@ On 13th, he stayed at Hippokampos until 135pm. However, there was a transaction 
 
 2. Various security persons vistied Kronos Capital on 18th at different time intervals. Adra Nubarron stayed at Kronos Capital for almost 24 hours.
 
-```{r,echo=FALSE , message=FALSE, warning=FALSE}
-gps_sf <- st_as_sf(gps,
-                   coords = c("long", "lat"),
-                   crs = 4326)
-gps_path_selected <- gps_sf %>%
-  st_as_sf() %>%
-  filter(day == "18")
-
-tmap_mode("view")
-tm_shape(ap) +
-  tm_rgb(ap, r = 1, g = 2, b = 3,
-         alpha = NA,
-         saturation = 1,
-         interpolate = TRUE,
-         max.value = 255) + 
-  tm_shape(gps_path_selected) +
-  tm_dots(col = 'id', size = 0.05)
-
-
-```
+![](Image/krono_25_18.png)
+![](Image/krono_25.png)
 
 3. Unknown place 
 
 Security People repeatedly visited an unknown place near Bean there around 1120am on 17th, 9th, 8th.
 
-```{r,echo=FALSE , message=FALSE, warning=FALSE}
-gps_sf <- st_as_sf(gps,
-                   coords = c("long", "lat"),
-                   crs = 4326)
-gps_path_selected <- gps_sf %>%
-  st_as_sf() %>%
-  filter(id== c("15", "24","21"))
-
-tmap_mode("view")
-tm_shape(ap) +
-  tm_rgb(ap, r = 1, g = 2, b = 3,
-         alpha = NA,
-         saturation = 1,
-         interpolate = TRUE,
-         max.value = 255) + 
-  tm_shape(gps_path_selected) +
-  tm_dots(col = 'id', size = 0.05)
-
-
-```
+![](Image/unknown.png)
 
 
 
